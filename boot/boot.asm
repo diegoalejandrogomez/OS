@@ -7,35 +7,46 @@
 ;*********************************************
 
 bits	16
-org		0x7c00
+%include "memory.asm"	
+
+org		$BOOT_LOADER_ADDRESS
 start:  jmp Loader
-msg	db	"OS is booting...!", 0		; the string to print
+msg	db	"OS Booting", 0		; the string to print
 
 ;*************************************************;
 ;	Entry point
 ;*************************************************;
 Loader:
-	mov	ax, 0				;clean accumulator
-	mov	ds, ax				;clean Data Segment
-	mov	es, ax				;clean Extra Segment
-	mov	si, msg				;Source Index register (SI). Used as a pointer to a source in stream operations 		
-	call	Print			
-	xor	ax, ax		
-	int	0x13				;interruption to print string
-	cli				
+	call	Print
+	call 	InitializeStack
+	cli	
     hlt
+;*************************************************;
+;	Move Loader to a safe position
+;*************************************************;
 
-;*************************************************;
-;	Print memory amount (TODO)
-;*************************************************;
-PrintMemory:
-	mov ax, 0
-	int	0x12 				;Now AX = Amount of KB in system recorded by BIOS
-	mov dx, ax				;Dividend
-	mov cx, 0x400			;divisor 1024 (mb)
+MoveLoader:
+	mov ax, BOOT_LOADER_SAFE_ADDRESS
+	mov ds, ax 				;Data segment
+	mov ax, BOOT_LOADER_SAFE_ADDRESS
+	mov es, ax				;Extra data segment
+	mov cx, 256			;cx is used for looping, I am passing a word (2 bytes x 256 times (512 bytes))
+	sub si, si				;source index register, used for string and memory array copying
+	sub di, di				;destionation index register, used for ES
+	rep
+	movw					;copy one register pair into another register pair
+	ret
+InitializeStack:	
+	mov ax, BOOT_LOADER_SAFE_ADDRESS
+	add ax, STACK_SIZE
+	;This allows us to use stack operations
+	mov ss, ax ;stack 0x9FF00
+	mov sp, STACK_SIZE	;512
+	ret
 
 %include "printer.asm"
-	
+%include "files.asm"
+
 times 510 - ($-$$) db 0	
 
 dw 0xAA55
