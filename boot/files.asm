@@ -1,15 +1,28 @@
-;in order to make it work for any parameter, the quantity of sectors to read should be saved in al
-        
-Load_from_device:
-	mov dx, 0x0001		;DH=Head  DL=Drive
-	mov cx, 0x0002		;CH=Cylinder CL=Sector (first sector is boot.asm)
-	mov bx, 0x0200		;512 buffer address pointer
-	mov ax, 0			;clean ax
-	add ax, BOOT_LOADER_SIZE
-	add ax, 0x0200		;02 AH, sectors to read AL
+
+LoadSetupFromDevice:
+	Reset:
+		mov		ah, 0					; reset floppy disk function
+		mov		dl, 0					; drive 0 is floppy drive
+		int		0x13					; call BIOS
+		jc		Reset					; If Carry Flag (CF) is set, there was an error. Try resetting again
+	
+	mov ax, $SETUP_ADDRESS				; we are going to read sector into address $SETUP_ADDRESS
+	mov es, ax
+	
+	mov dh, 0
+	mov dl, 0  ;DH=Head  DL=Drive
+	mov ch, 1
+	mov cl, 2	;CH=Cylinder CL=Sector (first sector is boot.asm)
+	mov ah, 0x02
+	mov al,	$SETUP_LENGHT
+	xor	bx, bx
 	int 0x13
 	jnc Load_ok
-
+	jc 	Load_Failed
+	ret
 Load_ok:
-	;mov dword [msg], "success" 		
-	;call	Print
+	call PrintSuccessMessage
+	ret
+Load_Failed:
+	call PrintErrorMessage
+	ret

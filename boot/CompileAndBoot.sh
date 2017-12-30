@@ -1,8 +1,8 @@
-rm bootloader.bin
-rm bootloader.img
+./Clean.sh
 nasm -f bin -o bootloader.bin boot.asm 
+nasm -f bin -o setup.bin setup.asm
 
-dd if=/dev/zero of=bootloader.img bs=5120 count=2880
-dd status=noxfer conv=notrunc if=boot.bin of=bootloader.img
-qemu-system-x86_64 bootloader.bin
+( dd if=bootloader.bin  bs=512 count=1
+  dd if=setup.bin bs=512 count=2879  ) > MisticOS.img
 
+qemu-system-x86_64 -fda MisticOS.img

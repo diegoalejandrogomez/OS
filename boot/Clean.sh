@@ -1,3 +1,2 @@
-rm bootloader.bin
-rm bootloader.img
-
+rm *.bin
+rm *.img
