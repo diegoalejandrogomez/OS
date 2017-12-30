@@ -1,5 +1,5 @@
 # OS
-Trying to learn about how an Operative System works. 
+Trying to learn about how an Operating System works. 
 
 I am using linux 0.11 and the following tutorials: 
 
