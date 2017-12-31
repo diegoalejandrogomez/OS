@@ -17,7 +17,7 @@ Loader:
 	call PrintBootMessage
 	call LoadSetup
 	jmp $SETUP_ADDRESS
-
+	
 ;*************************************************;
 ;	Load setup
 ;*************************************************;

@@ -2,11 +2,14 @@ bits	16
 %include "memory.asm"	
 
 org		$SETUP_ADDRESS
+start:  jmp Load
 
-Main:
-    call PrintBootMessage
-    cli
-    hlt
+Load:
+   sti
+   call PrintSuccessMessage
+   cli
+   hlt
+    
 
 %include "printer.asm"
 times 512 - ($-$$) db 0	
