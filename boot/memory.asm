@@ -20,13 +20,11 @@
 ;*********************************************
 
 ; start 	    end 	    size 	                type            description
-;0x00000500 	0x00000519  32 bytes    	        RAM  	        String Messages
-;0x00000520 	0x00007BFF  30.431 bytes    	    RAM  	        Free
+;0x00000500 	0x00007BFF  30kb            	    RAM  	        Setup
 ;0x00007C00  	0x00007DFF 	512 bytes 	            RAM             BootSector
 ;0x00007E00 	0x0007FFFF 	480.5 KiB 	            RAM  	        Free
 ;0x00080000 	0x0009FBFF 	approximately 120 KiB 	RAM             free for use, if it exists
 
-STRING_HANDLER_ADDRESS equ 0x0:0x0500
 BOOT_LOADER_ADDRESS equ 0x0:0x7C00
-SETUP_ADDRESS equ 0x0:0x0520
+SETUP_ADDRESS equ 0x0:0x0500
 SETUP_LENGHT  equ 1
