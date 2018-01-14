@@ -34,15 +34,16 @@ Loader:
     call InstallGDT;
     mov si, success	
     call print_string
+    
     call StartProtectedMode
+    
     call OpenA20
-    ;jmp	0x08:Stage3
+    jmp	0x08:Stage3
     hlt
 
 ;******************************************************
 ;	Start protected mode
 ;******************************************************
-
 StartProtectedMode:
     cli				    ; clear interrupts
 	mov	eax, cr0		; set bit 0 in cr0--enter pmode
@@ -66,4 +67,9 @@ OpenA20:
 bits 32	
 Stage3:
  
-	
+	mov		ax, 0x10		; set data segments to data selector (0x10 (based on offset of GDT))
+	mov		ds, ax
+	mov		ss, ax
+	mov		es, ax
+	mov		esp, STACK_BEGIN_ADDRESS		; stack begin address
+    hlt

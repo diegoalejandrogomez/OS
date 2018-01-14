@@ -2,11 +2,11 @@
 ; Global Descriptor Table (GDT)
 ;*******************************************
 gdt_data:
-;null descriptor 
+;null descriptor        (0x00)
 	dd 0 				; null descriptor--just fill 8 bytes with zero
 	dd 0 
   
-;code descriptor:
+;code descriptor:        (0x08)
     lower_segment_limit: ;bits 0-15
 	    dw 0FFFFh 		;2 bytes
     base_address:
@@ -42,7 +42,7 @@ gdt_data:
     base_high:
         db 0 			;Bits 24-32 of the base address
                         
- ;data descriptor:
+ ;data descriptor:     (0x10)
 	dw 0FFFFh 			; limit low (Same as code)
 	dw 0 				; base low
 	db 0 				; base middle
