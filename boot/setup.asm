@@ -8,7 +8,13 @@ bits	16
 org		$SETUP_ADDRESS
 start:  jmp Loader
 
+
+%include "printer.asm"
+%include "gdt.asm"
+
 msg db "Starting compatibility mode", 0
+loadingGdt db "Loading GDT", 0
+success db "Success", 0
 
 ;*************************************************;
 ;	Entry point
@@ -18,14 +24,46 @@ Loader:
     xor	ax, ax		
     mov	ds, ax		
     mov	es, ax	
-	mov si, msg
-	
+
+	mov si, msg	
     call print_string
-    ;jmp BOOT_LOADER_ADDRESS
-    cli
+
+    mov si, loadingGdt	
+    call print_string;
+    
+    call InstallGDT;
+    mov si, success	
+    call print_string
+    call StartProtectedMode
+    call OpenA20
+    ;jmp	0x08:Stage3
     hlt
 
-%include "printer.asm"
-    
-times 510 - ($-$$) db 0	
-dw 0xAA55
+;******************************************************
+;	Start protected mode
+;******************************************************
+
+StartProtectedMode:
+    cli				    ; clear interrupts
+	mov	eax, cr0		; set bit 0 in cr0--enter pmode
+	or	eax, 1
+	mov	cr0, eax
+    ret
+
+;******************************************************
+;	Open A20 (Now we can use all our memory)
+;******************************************************
+OpenA20:
+    mov al, 0xdd	; command 0xdd: enable a20
+    out 0x64, al	; send command to controller
+    ret
+ 
+
+;******************************************************
+;	ENTRY POINT FOR STAGE 3
+;******************************************************
+
+bits 32	
+Stage3:
+ 
+	
